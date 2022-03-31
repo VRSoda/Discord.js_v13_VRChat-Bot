@@ -33,11 +33,12 @@ for (const file of commandFiles) {
 	client.commands.set(command.data.name, command);
 }
 
-//? 봇 서버가 실행되면, 한번만 사용하는 함수
+// 봇 서버가 실행되면, 한번만 사용하는 함수
 client.once('ready', () => {
 	console.log(`${client.user.tag} 을 실행합니다.`);
 });
 
+// 몽고 DB 연결
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log('MongoDB 연결 완료'))
 .catch(error => console.log(error))
@@ -45,7 +46,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.get('/', (req, res) => res.send('Develog!'))
 app.listen(port, () => console.log(`${port}포트 연결 완료`))
 
-//? 이모지를 등록하고싶을때는 {windows + .} 단축키
+//!이모지를 등록하고싶을때는 {windows + .} 단축키
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
 
@@ -61,10 +62,11 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
-
+/*
+몽고DB에서 가져온 값을 넣어서 토큰을 만드는데 어떻게 넣어야 할까나..?
+*/
 client.on('interaction', async interaction => {
 	const UserData = require('./Data/UserData.js')
-	const timer = ms=>new Promise(res=>settimeout(res.ms))
 
 		const FindUserData = await UserData.findOne()
 		const IK = FindUserData.VRChat_ID
@@ -80,9 +82,11 @@ client.on('interaction', async interaction => {
 		const FriendsApi = new vrchat.FriendsApi(configuration);
 		const WorldApi = new vrchat.InstancesApi(configuration);
 		
-		while ( true ) { // 무한반복
+		// 무한반복
+		/*while ( true ) {
 			if(FindUserData.Discored_id === FindUserData.Discored_id) {
 				AuthenticationApi.getCurrentUser().then(resp => {
+
 					//? 유저 프로필 상태변경
 					FriendsApi.getFriendStatus.then (async resp => {
 						let Onlinestatus = resp.data
@@ -109,12 +113,14 @@ client.on('interaction', async interaction => {
 								break;
 						}
 					})
+
 					//?유저 프로필 사진 확인
 					FriendsApi.getFriends().then(async resp =>{
 						let FriednsProfileImage = resp.data
 						resp.data.forEach(x=> FriednsProfileImage += `${x.currentAvatarThumbnailImageUrl}\n`)
 						await interaction.reply(FriednsProfileImage);
 					})
+					
 					//?월드 이동 확인
 					WorldApi.getInstance().then(async resp =>{
 						let wolrdtype = resp.data
@@ -143,8 +149,7 @@ client.on('interaction', async interaction => {
 					})
 				})
 			}
-			await timer(60000)
-		}
+		}*/
 })
 //? 디스코드 봇 로그인
 client.login(process.env.Token);

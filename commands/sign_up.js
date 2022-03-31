@@ -1,11 +1,10 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const fs = require('fs');
-
+const {SlashCommandBuilder} = require('@discordjs/builders')
+const UserData = require('../Data/UserData.js')
 
 module.exports = {
 	data: new SlashCommandBuilder()
 	.setName('vrchat_sign')
-	.setDescription('VRChat login절차를 진행합니다.')
+	.setDescription('디스코드 계정 데이터 등록 진행합니다.')
     .addStringOption(option =>
         option.setName('id')
             .setDescription('아이디를 입력합니다.')
@@ -22,19 +21,18 @@ module.exports = {
         const VRC_Password = interaction.options.getString('password')
         const DiscordUserId = interaction.user.id
 
-        const filePath = `./Data/UserData.json`
-        !fs.existsSync(filePath) ? fs.writeFileSync(filePath, JSON.stringify([])) : null;
-        const UserData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-
-        const DataID = UserData.find( DUI => DUI.DiscordUserId === DiscordUserId )
-        if(DataID) {
+        const FindUserData = await UserData.find({});
+        
+        if(FindUserData.Discored_id === DiscordUserId) {
             await interaction.reply("이미 등록된 유저입니다. 한번만 등록하세요!");
         }else {
             await interaction.reply("VRChat 계정이 등록 되었습니다.");
-            UserData.push({DiscordUserId, VRC_Id, VRC_Password});
+            const insertData = new UserData({
+                Discored_id:DiscordUserId,
+                VRChat_ID:VRC_Id,
+                VRChat_PW:VRC_Password
+            })
+            insertData.save().catch(console.error)
         }
-
-        fs.writeFileSync(filePath, JSON.stringify(UserData, null, 2));
 	},
 };

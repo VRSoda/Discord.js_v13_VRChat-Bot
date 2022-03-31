@@ -1,32 +1,27 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const vrchat = require("vrchat");
-const fs = require('fs');
+const {SlashCommandBuilder} = require('@discordjs/builders')
+const vrchat = require('vrchat')
+const UserData = require('../Data/UserData.js')
 
 module.exports = {
 	data: new SlashCommandBuilder()
 	.setName('online_friend')
 	.setDescription('접속중인 친구 인원수를 조회합니다.'),
 	async execute(interaction) {
-		const filePath = `./Data/UserData.json`
-		const UserData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
 		const DiscordUserId = interaction.user.id
-		const StringDUI = DiscordUserId.toString();
+		const FindUserData = await UserData.findOne()
 
-		let DI_TAMP = UserData.find(index => index.DiscordUserId === StringDUI)
-		if(!DI_TAMP) {
-			//아이디가 저장된게 없음!!!
-			await interaction.reply("계정 등록이 안되었습니다. 계정 등록을 진행하세요.");
-			return ;
-		}
-
-		const {DiscordUserId:DI} = DI_TAMP;
-		if(DI === StringDUI) {
-			const { VRC_Id:IK, VRC_Password:PK } = UserData.find(index => index.DiscordUserId === DiscordUserId)
+		if(FindUserData.Discored_id === DiscordUserId) {
+			const FindUserData = await UserData.findOne()
+			const IK = FindUserData.VRChat_ID
+			const PK = FindUserData.VRChat_PW
+			
+			
 			const configuration = new vrchat.Configuration({
-				username: (IK),
-				password: (PK)
+				username: IK,
+				password: PK
 			})
+			console.log(IK)
+			console.log(PK)
 			
 			const AuthenticationApi = new vrchat.AuthenticationApi(configuration)
 			const FriendsApi = new vrchat.FriendsApi(configuration);

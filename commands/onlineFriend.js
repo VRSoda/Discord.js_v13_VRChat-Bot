@@ -4,6 +4,7 @@ const UserData = require('../Data/UserData.js')
 const FavoritesUserData = require('../Data/FavoritesUser.js')
 const { Client, ChannelManager } = require ("discord.js");
 const { find } = require('../Data/UserData.js');
+const { TopologyDescription } = require('mongodb');
 module.exports = {
 	data: new SlashCommandBuilder()
 	.setName('online_friend')
@@ -39,18 +40,27 @@ module.exports = {
 				console.log(FindFavoritesData.channel_name)
 				console.log(FindFavoritesData.SetUserChannelID)
 				FriendsApi.getFriends().then (async resp => {
-					let result = resp.data
-						resp.data.forEach(x=> result += `${x.displayName}, ${x.id}, ${x.status}\n`)
+					let Serch_displayName = resp.data;
+						resp.data.forEach(x=> Serch_displayName += `${x.id}, ${x.status}\n`)
 					
-					console.log(result)
-					const todo = result.split('\n').map(item=>item.split(','))
+					const todo = Serch_displayName.split('\n').map(item=>item.split(','))
 
-					const record = todo.concat
 
-					console.log(record)
-					if(todo[1] === FindFavoritesData.SetUserID ){
-						await interaction.guild.channels.cache.get('958698836614860801').send(`${displayName}, ${result}`);
+					let list = {}
+					for(let [key,value] of todo){
+						list[key]=value
 					}
+
+					let ListUserID = Object.keys(list)
+
+					console.log(ListUserID)
+					console.log(FindFavoritesData.SetUserID)
+					if (ListUserID === FindFavoritesData.SetUserID){
+						await interaction.guild.channels.cache.get('958698836614860801').send(Serch_displayName);
+					}
+
+
+
 					/*switch (result) {
 						Client.channels.cache.get(`${FindFavoritesData.SetUserChannelID}`).send(`${FindFavoritesData.channel_name}상태변경 : 🔵 join me`);
 						case "online" :

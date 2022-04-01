@@ -18,7 +18,7 @@ module.exports = {
         
         if(FindFavoritesData.SetUserID === Favorites_id) {
             await interaction.reply("계정이 삭제 되었습니다");
-            FavoritesUser.deleteOne( { SetUserID : Favorites_id }).catch(console.error)
+            FindFavoritesData.deleteOne( { SetUserID : Favorites_id }).catch(console.error)
         }else {
             await interaction.reply("삭제 되거나 등록되지 않았습니다.");
         }
